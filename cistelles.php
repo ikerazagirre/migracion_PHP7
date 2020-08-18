@@ -57,18 +57,18 @@ if ($_SESSION['image_is_logged_in'] == 'true' )
 		{		
 			$query2 = "INSERT INTO comanda_linia (numero, ref, quantitat, cistella)
 				VALUES ('$pnum', '$pref', '1', '0')";
-			mysql_query($query2) or die('Error, insert query2 failed');
+			mysqli_query($conn,$query2) or die('Error, insert query2 failed');
 		}
 		else 
 		{
 			$query3 = "INSERT INTO comanda ( `usuari` , `proces`, `grup`, `sessionid` , `data` )
 				VALUES ('$paddfam', '$gproces', '$ggrup', '$sessionid', '$gbd_data')";
-			mysql_query($query3) or die('Error, insert query3 failed');
-			$inumcmda=mysql_insert_id(); 		
+			mysqli_query($conn,$query3) or die('Error, insert query3 failed');
+			$inumcmda=mysqli_insert_id(); 		
 
 			$query4 = "INSERT INTO comanda_linia (numero, ref, quantitat, cistella)
 				VALUES ('$inumcmda', '$pref', '1', '0')";
-			mysql_query($query4) or die('Error, insert query4 failed'); 	
+			mysqli_query($conn,$query4) or die('Error, insert query4 failed'); 	
 		}	
 	}	
 	
@@ -86,19 +86,19 @@ if ($_SESSION['image_is_logged_in'] == 'true' )
 	
 	/// Busquem nomprod i nomprov a partir de prodref ////
 	$query0= "SELECT nom, proveidora FROM productes WHERE ref='$gprodref'";
-	$result0=mysql_query($query0);
+	$result0=mysqli_query($conn,$query0);
 	if (!$result0) { die("Query0 to show fields from table failed");}
 
-	list($gnomprod,$gprov)=mysql_fetch_row($result0);
+	list($gnomprod,$gprov)=mysqli_fetch_row($result0);
 	///////////
 				
 		$select9= "SELECT pr.categoria, cat.estoc
 		FROM productes AS pr, categoria AS cat
 		WHERE pr.categoria=cat.tipus AND pr.ref='$gprodref'";
-		$result9 = mysql_query($select9);
-		if (!$result9) { die('Invalid query select9: ' . mysql_error());}
+		$result9 = mysqli_query($conn,$select9);
+		if (!$result9) { die('Invalid query select9: ' . mysqli_error($conn));}
 
-		list($scat,$sestoc)= mysql_fetch_row($result9);
+		list($scat,$sestoc)= mysqli_fetch_row($result9);
 		
 		$count=0;
 		for ($i=0; $i<$files; $i++) 
@@ -109,10 +109,10 @@ if ($_SESSION['image_is_logged_in'] == 'true' )
 			$select= "SELECT cistella 
 			FROM comanda_linia 
 			WHERE numero='$post_numcmda[$i]' AND ref='$gprodref'";
-			$result = mysql_query($select);
-			if (!$result) { die('Invalid query select: ' . mysql_error());}
+			$result = mysqli_query($conn,$select);
+			if (!$result) { die('Invalid query select: ' . mysqli_error($conn));}
 
-			list($c)= mysql_fetch_row($result);
+			list($c)= mysqli_fetch_row($result);
 			
 			// Si estem editant la variable cistella, primer introdueix el seu valor a l estoc ///
 						
@@ -121,7 +121,7 @@ if ($_SESSION['image_is_logged_in'] == 'true' )
 				$query6= "UPDATE productes 
 				SET estoc=estoc+'$c'
 				WHERE ref='$gprodref'";
-				mysql_query($query6) or die('Error, insert query6 failed');
+				mysqli_query($conn,$query6) or die('Error, insert query6 failed');
 				}
 			
 			///////////////////////////////////////
@@ -129,9 +129,9 @@ if ($_SESSION['image_is_logged_in'] == 'true' )
 			///////////////////////////////////////			
 			
 				$select10= "SELECT preusi, iva, marge, descompte FROM productes WHERE ref='$gprodref'";
-				$result10 = mysql_query($select10);
-				if (!$result10) { die('Invalid query select10: ' . mysql_error());}
-				list($spreusi,$siva,$smarge,$sdescompte)= mysql_fetch_row($result10);
+				$result10 = mysqli_query($conn,$select10);
+				if (!$result10) { die('Invalid query select10: ' . mysqli_error($conn));}
+				list($spreusi,$siva,$smarge,$sdescompte)= mysqli_fetch_row($result10);
 											
 				$pvp=$spreusi*(1+$smarge);
 				$pvp=sprintf("%01.2f", $pvp);		
@@ -141,14 +141,14 @@ if ($_SESSION['image_is_logged_in'] == 'true' )
 				$query= "UPDATE comanda_linia
 					SET cistella='$post_cistella[$i]', preu='$pvp', iva='$siva', descompte='$sdescompte'
 				WHERE numero='$post_numcmda[$i]' AND ref='$gprodref'";
-				mysql_query($query) or die('Error, insert query failed');
+				mysqli_query($conn,$query) or die('Error, insert query failed');
 			
 				if ($sestoc=='si')
 				{
 					$query7= "UPDATE productes 
 					SET estoc=estoc-'$post_cistella[$i]'
 					WHERE ref='$gprodref'";
-					mysql_query($query7) or die('Error, insert query7 failed');
+					mysqli_query($conn,$query7) or die('Error, insert query7 failed');
 			}	
 		}
 
@@ -180,9 +180,9 @@ if ($_SESSION['image_is_logged_in'] == 'true' )
 	$taula3 = "SELECT check1
 			FROM cistella_check
 			WHERE proces='$gproces' AND grup='$ggrup' AND data='$gbd_data'";			
-	$result3 = mysql_query($taula3);
-	if (!$result3) {die('Invalid query3: ' . mysql_error());}
-	list($check)=mysql_fetch_row($result3);
+	$result3 = mysqli_query($conn,$taula3);
+	if (!$result3) {die('Invalid query3: ' . mysqli_error($conn));}
+	list($check)=mysqli_fetch_row($result3);
 	
 	/// Si no es pot editar (gvis=0) no hi ha botó de "pas segúent" ni d'"introduir nou producte" ///
 	if ($gvis==0) 
@@ -236,18 +236,18 @@ onClick="javascript:window.location = 'cistelles2.php?id2=<?php echo $gdata.'&id
 	$color2 = array("#1abc9c", "#e74c3c", "#34495e", "#b20000", "#9b59b6", "#f1c40f", "#f39c12", "#c0392b", "#2980b9");
 	$cc=0;
 	$sel = "SELECT tipus FROM categoria ORDER BY tipus";
-	$result = mysql_query($sel);
-	if (!$result) {die('Invalid query: ' . mysql_error()); }
-	while (list($cat)= mysql_fetch_row($result))
+	$result = mysqli_query($conn,$sel);
+	if (!$result) {die('Invalid query: ' . mysqli_error($conn)); }
+	while (list($cat)= mysqli_fetch_row($result))
 	{	
 		$taula2 = "SELECT cl.ref, pr.nom, pr.proveidora, pr.unitat, pr.categoria, c.numero, c.data
 		FROM comanda AS c, comanda_linia AS cl, productes AS pr
 		WHERE c.numero=cl.numero AND cl.ref=pr.ref
 		AND c.data='$gbd_data' AND pr.categoria='$cat' ".$aw;
-		$result2 = mysql_query($taula2);
-		if (!$result2) {die('Invalid query2: ' . mysql_error());}
+		$result2 = mysqli_query($conn,$taula2);
+		if (!$result2) {die('Invalid query2: ' . mysqli_error($conn));}
 	
-		if (mysql_num_rows($result2)>0)
+		if (mysqli_num_rows($result2)>0)
 		{
 			print ('<a href="#'.$cat.'" id="color" class="link u-text-semibold"  style="border-bottom: 1px solid transparent;color: '.$color2[$cc].'; 
 				margin-bottom: 5px; margin-right: 3px; margin-right: 1rem;">
@@ -261,9 +261,9 @@ onClick="javascript:window.location = 'cistelles2.php?id2=<?php echo $gdata.'&id
 	<div  style="overflow: auto; height: 44vh;">';
 	$cc=0;
 	$sel = "SELECT tipus FROM categoria ORDER BY tipus";
-	$result = mysql_query($sel);
-	if (!$result) {die('Invalid query: ' . mysql_error()); }
-	while (list($cat)= mysql_fetch_row($result))
+	$result = mysqli_query($conn,$sel);
+	if (!$result) {die('Invalid query: ' . mysqli_error($conn)); }
+	while (list($cat)= mysqli_fetch_row($result))
 	{	
 	
 	$taula2 = "SELECT cl.ref, pr.nom, pr.proveidora, pr.unitat, pr.categoria, c.numero, c.data, SUM(cl.quantitat) AS sum, SUM(cl.cistella) AS csum
@@ -273,10 +273,10 @@ onClick="javascript:window.location = 'cistelles2.php?id2=<?php echo $gdata.'&id
 	GROUP BY cl.ref
 	ORDER BY pr.categoria, pr.proveidora, pr.nom";
 
-	$result2 = mysql_query($taula2);
-	if (!$result2) {die('Invalid query2: ' . mysql_error());}
+	$result2 = mysqli_query($conn,$taula2);
+	if (!$result2) {die('Invalid query2: ' . mysqli_error($conn));}
 	
-	if (mysql_num_rows($result2)>0)
+	if (mysqli_num_rows($result2)>0)
 	{
 		print ('<a name="'.$cat.'"></a>
 	  	<h2 style="color: '.$color2[$cc].'">'.$cat.'</h2>');
@@ -287,7 +287,7 @@ onClick="javascript:window.location = 'cistelles2.php?id2=<?php echo $gdata.'&id
 		echo "<td width='20%'  class='u-text-semibold  u-text-center'>Total cesta</td>";
 		echo "</tr>";
 
-		while (list($prodref,$nom_prod,$nom_prov,$uni,$t,$n,$d,$sum,$csum)=mysql_fetch_row($result2))
+		while (list($prodref,$nom_prod,$nom_prov,$uni,$t,$n,$d,$sum,$csum)=mysqli_fetch_row($result2))
 		{
 			$suma = sprintf("%01.2f", $sum); // pedido
 			$csuma= sprintf("%01.2f", $csum); // cesta

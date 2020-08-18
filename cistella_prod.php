@@ -53,10 +53,10 @@ $user = $_SESSION['user'];
 	
 	/// Busquem nomprod i nomprov a partir de prodref ////
 	$query0= "SELECT nom, proveidora FROM productes WHERE ref='$gprodref'";
-	$result0=mysql_query($query0);
+	$result0=mysqli_query($conn,$query0);
 	if (!$result0) { die("Query0 to show fields from table failed");}
 
-	list($gnomprod,$gprov)=mysql_fetch_row($result0);
+	list($gnomprod,$gprov)=mysqli_fetch_row($result0);
 	///////////
 	
 	//////////////////////////////////////////////////
@@ -74,18 +74,18 @@ $user = $_SESSION['user'];
 		{		
 			$query2 = "INSERT INTO comanda_linia (numero, ref, quantitat, cistella)
 				VALUES ('$pnum', '$gprodref', '1', '0')";
-			mysql_query($query2) or die('Error, insert query2 failed');
+			mysqli_query($conn,$query2) or die('Error, insert query2 failed');
 		}
 		else 
 		{
 			$query3 = "INSERT INTO comanda ( `usuari` , `proces`, `grup`, `sessionid` , `data` )
 				VALUES ('$paddfam', '$gproces', '$ggrup', '$sessionid', '$gbd_data')";
-			mysql_query($query3) or die('Error, insert query3 failed');
-			$inumcmda=mysql_insert_id(); 		
+			mysqli_query($conn,$query3) or die('Error, insert query3 failed');
+			$inumcmda=mysqli_insert_id($conn); 		
 
 			$query4 = "INSERT INTO comanda_linia (numero, ref, quantitat, cistella)
 				VALUES ('$inumcmda', '$gprodref', '1', '0')";
-			mysql_query($query4) or die('Error, insert query4 failed'); 	
+			mysqli_query($conn,$query4) or die('Error, insert query4 failed'); 	
 		}	
 	}	
 	
@@ -172,10 +172,10 @@ return true;
 	$query= "SELECT unitat,preusi,iva,marge,descompte 
 	FROM productes 
 	WHERE ref='$gprodref'";
-	$result=mysql_query($query);
+	$result=mysqli_query($conn,$query);
 	if (!$result) { die("Query to show fields from table failed");}
 
-	list($unitat,$preusi,$iva,$marge,$descompte)=mysql_fetch_row($result);
+	list($unitat,$preusi,$iva,$marge,$descompte)=mysqli_fetch_row($result);
 	/// el pvp sense iva -pvpsi- és el preu més el marge menys el descompte ///
 	/// el pvp amb iva -pvp- el el pvpsi més l'iva ///
 	$pvpsi=$preusi*(1+$marge);
@@ -222,11 +222,11 @@ return true;
 	AND c.proces='$gproces' AND c.grup='$ggrup' ".$aw."
 	ORDER BY c.usuari";
 	
-	$result3 = mysql_query($taula3);
-	if (!$result3) {die('Invalid query3: ' . mysql_error());}
+	$result3 = mysqli_query($conn,$taula3);
+	if (!$result3) {die('Invalid query3: ' . mysqli_error($conn));}
 
 	$i=0;
-	while(list($numero,$familia,$p,$quantitat,$cistella)=mysql_fetch_row($result3))
+	while(list($numero,$familia,$p,$quantitat,$cistella)=mysqli_fetch_row($result3))
 	{
 
 ?>

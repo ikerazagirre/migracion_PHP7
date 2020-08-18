@@ -186,9 +186,9 @@ if ($pnom!="" AND $pgrup!="" AND $pactiu!="")
 
 	$select= "SELECT nom FROM processos	
 	WHERE nom='".$pnom."' AND grup='".$pgrup."' ";
-	$result = mysql_query($select) or die("Query failed. " . mysql_error());
+	$result = mysqli_query($conn,$select) or die("Query failed. " . mysqli_error($conn));
    	
-   	if (mysql_num_rows($result) == 1) 
+   	if (mysqli_num_rows($result) == 1) 
    	{
    		die
    		("<p class='comment'>
@@ -207,7 +207,7 @@ if ($pnom!="" AND $pgrup!="" AND $pactiu!="")
 			VALUES ('".$pnom."', '".$pgrup."', '".$ptipus."', '".$pdataini."', '".$pdatafin."',
 			'".$pperiode."', '".$pdiare."', '".$pdiat."', '".$phorat."', '".$pactiu."') ";
 
-			mysql_query($query2) or die('Error, insert query2 failed');
+			mysqli_query($conn,$query2) or die('Error, insert query2 failed');
 	
 			echo 
 			"<p class='comment'>
@@ -247,8 +247,8 @@ else {
 <?php
 
 	$select2= "SELECT nom FROM grups WHERE actiu='actiu' ORDER BY nom";
-	$result2 = mysql_query($select2) or die("Query2 failed. " . mysql_error());
-	while (list($sgrup)=mysql_fetch_row($result2)) 
+	$result2 = mysqli_query($conn,$select2) or die("Query2 failed. " . mysqli_error($conn));
+	while (list($sgrup)=mysqli_fetch_row($result2)) 
 {
 if ($pgrup==$sgrup)
 	{

@@ -41,9 +41,9 @@ Crear nova categoria</p>
 	{
 		$select= "SELECT tipus FROM categoria	
 		WHERE tipus='".$ptipus."' ";
-		$result = mysql_query($select) or die("Query failed. " . mysql_error());
+		$result = mysqli_query($conn,$select) or die("Query failed. " . mysqli_error($conn));
    	
-   	if (mysql_num_rows($result) == 1) 
+   	if (mysqli_num_rows($result) == 1) 
    	{
    		die
    		("<p class='comment'>No es pot crear de nou la categoria ".$ptipus." perquè ja existeix.</p>");
@@ -52,7 +52,7 @@ Crear nova categoria</p>
 		{
 			$query2 = "INSERT INTO categoria
 			VALUES ('".$ptipus."', 'activat', '".$estoc."') ";
-			mysql_query($query2) or die('Error, insert query2 failed');
+			mysqli_query($conn,$query2) or die('Error, insert query2 failed');
 	
 			echo 
 			"<p class='comment'>La categoria ".$supertipus." s'ha introduït correctament a la base de dades.</p>";

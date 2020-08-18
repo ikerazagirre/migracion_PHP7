@@ -38,7 +38,7 @@ if ($_SESSION['image_is_logged_in'] == 'true') {
                 $query3 = "UPDATE productes
 			SET actiu='" . $gactiu . "'
 			WHERE ref='" . $gref . "'";
-                mysql_query($query3) or die('Error, insert query3 failed');
+                mysqli_query($conn,$query3) or die('Error, insert query3 failed');
 
                 $pcat = $gpcat;
                 $psubcat = $gpsubcat;
@@ -57,11 +57,11 @@ if ($_SESSION['image_is_logged_in'] == 'true') {
 
                             <?php
                             $select2 = "SELECT tipus FROM categoria ORDER BY tipus";
-                            $query2 = mysql_query($select2);
+                            $query2 = mysqli_query($conn,$select2);
                             if (!$query2) {
-                                die('Invalid query2: ' . mysql_error());
+                                die('Invalid query2: ' . mysqli_error($conn));
                             }
-                            while (list($scat) = mysql_fetch_row($query2)) {
+                            while (list($scat) = mysqli_fetch_row($query2)) {
                                 if ($pcat == $scat) {
                                     echo '<option value="' . $scat . '" selected>' . $scat . '</option>';
                                 } else {
@@ -93,11 +93,11 @@ if ($_SESSION['image_is_logged_in'] == 'true') {
 						if ($pcat != "") {
 							$select2 = "SELECT subcategoria FROM subcategoria
 WHERE categoria='" . $pcat . "' ORDER BY subcategoria";
-							$query2 = mysql_query($select2);
+							$query2 = mysqli_query($conn,$select2);
 							if (!$query2) {
-								die('Invalid query2: ' . mysql_error());
+								die('Invalid query2: ' . mysqli_error($conn));
 							}
-							while (list($scat) = mysql_fetch_row($query2)) {
+							while (list($scat) = mysqli_fetch_row($query2)) {
 								if ($psubcat == $scat) {
 									echo '<option value="' . $scat . '" selected>' . $scat . '</option>';
 								} else {
@@ -117,11 +117,11 @@ WHERE categoria='" . $pcat . "' ORDER BY subcategoria";
 
                             <?php
                             $select3 = "SELECT nom FROM proveidores ORDER BY nom";
-                            $query3 = mysql_query($select3);
+                            $query3 = mysqli_query($conn,$select3);
                             if (!$query3) {
-                                die('Invalid query3: ' . mysql_error());
+                                die('Invalid query3: ' . mysqli_error($conn));
                             }
-                            while (list($sprov) = mysql_fetch_row($query3)) {
+                            while (list($sprov) = mysqli_fetch_row($query3)) {
                                 if ($pprov == $sprov) {
                                     echo '<option value="' . $sprov . '" selected>' . $sprov . '</option>';
                                 } else {
@@ -176,14 +176,14 @@ WHERE categoria='" . $pcat . "' ORDER BY subcategoria";
 			    </tr>');
 
                 $sel = "SELECT ref,nom,proveidora,actiu FROM productes " . $where . " ORDER BY nom";
-                $result = mysql_query($sel);
+                $result = mysqli_query($conn,$sel);
                 if (!$result) {
-                    die('Invalid query: ' . mysql_error());
+                    die('Invalid query: ' . mysqli_error($conn));
                 }
 
                 $i = 0;
                 $k = 0;
-                while (list($ref, $nomprod, $nomprov, $actiu) = mysql_fetch_row($result)) {
+                while (list($ref, $nomprod, $nomprov, $actiu) = mysqli_fetch_row($result)) {
                     $checked1 = "";
                     $checked2 = "";
                     if ($actiu == "actiu") {

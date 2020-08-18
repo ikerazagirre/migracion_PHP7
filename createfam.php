@@ -141,7 +141,7 @@ if ($_SESSION['image_is_logged_in'] == 'true') {
                         $query2 = "INSERT INTO usuaris
 	VALUES ('" . $p_nom . "', '" . $md5_cdp . "', '" . $p_tip . "', '" . $p_tip2 . "', '" . $p_dia . "', '0', '" . $p_comp . "', '" . $p_tlf1 . "', '" . $p_tlf2 . "', '" . $p_email1 . "', '" . $p_email2 . "', '" . $p_nomf . "', '" . $p_adressf . "', '" . $p_niff . "', '" . $p_nota . "','" . $p_kuota . "','" . $p_IBAN . "','" . $p_domiciliacion . "','" . $p_fechaalta . "') ";
 
-                        mysql_query($query2) or die('Error, insert query2 failed:' . mysql_error());
+                        mysqli_query($conn,$query2) or die('Error, insert query2 failed:' . mysqli_error($conn));
 
                         echo
                             "<tr><td align='center' class='cos2'>
@@ -210,12 +210,12 @@ if ($_SESSION['image_is_logged_in'] == 'true') {
 
                                     <?php
                                     $select3 = "SELECT nom FROM grups ORDER BY nom";
-                                    $query3 = mysql_query($select3);
+                                    $query3 = mysqli_query($conn,$select3);
                                     if (!$query3) {
-                                        die('Invalid query3: ' . mysql_error());
+                                        die('Invalid query3: ' . mysqli_error($conn));
                                     }
 
-                                    while (list($sgrup) = mysql_fetch_row($query3)) {
+                                    while (list($sgrup) = mysqli_fetch_row($query3)) {
                                         echo '<option value="' . $sgrup . '">' . $sgrup . '</option>';
                                     }
                                     ?>

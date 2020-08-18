@@ -43,7 +43,7 @@ if ($actiu!="")
 	SET actiu='".$actiu."', notes='".$notes."'
 	WHERE nom='".$nom."' ";
 
-	mysql_query($query2) or die('Error, insert query2 failed');
+	mysqli_query($conn,$query2) or die('Error, insert query2 failed');
 	
 	echo "<p class='comment'>Els canvis en el grup ".$supernom." s'han guardat correctament
 	</p>";
@@ -59,13 +59,13 @@ else {
 
 $select= "SELECT actiu,notes FROM grups WHERE nom='$nom'";
 
-$query=mysql_query($select);
+$query=mysqli_query($conn,$select);
 
 if (!$query) {
-    die('Invalid query: ' . mysql_error());
+    die('Invalid query: ' . mysqli_error($conn));
     }
     
-list($preactiu,$prenotes)=mysql_fetch_row($query);
+list($preactiu,$prenotes)=mysqli_fetch_row($query);
 	
 	$sel9="";$sel10="";	
 	if ($preactiu=="actiu") {$sel9="selected";}

@@ -58,16 +58,16 @@ Editar proveïdora <?php echo $nompre; ?></p>
 if ($elim!="")
 {
 	$query = "SELECT nom,proveidora FROM productes WHERE proveidora='$nompre'";
-	$result=mysql_query($query);
+	$result=mysqli_query($conn,$query);
 	if (!$result) {die("Query to show fields from query failed");}
-	$check=mysql_numrows($result);
+	$check=mysqli_numrows($result);
 	if ($check != 0) 
 	{
 		echo "<p class='comment'>Les dades de l'empresa o persona proveïdora ".$supernompre." no 
 		poden borrar-se perquè tenen encara productes associats. Hauries d'eliminar el productes associats
 		en primer terme. Si no pots, recorda que pots desactivar aquesta proveïdora.</p>";
 		echo "<p class='comment'>Productes associats</p>";
-		while (list($nom,$proveidora)=mysql_fetch_row($result))
+		while (list($nom,$proveidora)=mysqli_fetch_row($result))
 		{
 			echo "<p class='cos2'>".$nom."-".$proveidora."</p>";
 		}		
@@ -76,7 +76,7 @@ if ($elim!="")
 	else
 	{
 		$query2="DELETE FROM proveidores WHERE nom='$nompre'";
-		mysql_query($query2) or die("Error, no s'han pogut borrar les dades");
+		mysqli_query($conn,$query2) or die("Error, no s'han pogut borrar les dades");
 
   		die ("<p class='comment'>S'han eliminat les dades de l'empresa o persona proveïdora ".$supernompre."
    	</p>");
@@ -91,7 +91,7 @@ if ($pnom != "")
 		web='".$pweb."',email1='".$pemail1."',email2='".$pemail2."',notes='".$pnotes."'
 	   WHERE nom='".$pnom."'";
 
-		mysql_query($query2) or die('Error, insert query2 failed');
+		mysqli_query($conn,$query2) or die('Error, insert query2 failed');
 	
 		echo "<p class='comment'>Les dades de l'empresa o persona proveïdora ".$psupernom." 
 		s'han guardat satisfactòriament</p>";
@@ -111,10 +111,10 @@ if ($pnom != "")
 else
 {
 	$select= "SELECT * FROM proveidores WHERE nom='$nompre'";
-	$query=mysql_query($select);
-	if (!$query) {    die('Invalid query: ' . mysql_error());    }
+	$query=mysqli_query($conn,$select);
+	if (!$query) {    die('Invalid query: ' . mysqli_error($conn));    }
     
-	list($nom,$actiu,$nomcomplert,$contacte,$adress,$telf1,$telf2,$fax,$web,$email1,$email2,$notes)=mysql_fetch_row($query);
+	list($nom,$actiu,$nomcomplert,$contacte,$adress,$telf1,$telf2,$fax,$web,$email1,$email2,$notes)=mysqli_fetch_row($query);
 
 	if ($actiu=='activat'){ $checked1='checked'; $checked2='';}
 	else { $checked1=''; $checked2='checked';}

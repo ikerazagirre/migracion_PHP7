@@ -75,18 +75,18 @@ $user = $_SESSION['user'];
 		{		
 			$query2 = "INSERT INTO comanda_linia (numero, ref, quantitat, cistella)
 				VALUES ('$pnum', '$pref', '1', '0')";
-			mysql_query($query2) or die('Error, insert query2 failed');
+			mysqli_query($conn,$query2) or die('Error, insert query2 failed');
 		}
 		else 
 		{
 			$query3 = "INSERT INTO comanda ( `usuari` , `proces`, `grup`, `sessionid` , `data` )
 				VALUES ('$paddfam', '$gproces', '$ggrup', '$sessionid', '$gbd_data')";
-			mysql_query($query3) or die('Error, insert query3 failed');
-			$inumcmda=mysql_insert_id(); 		
+			mysqli_query($conn,$query3) or die('Error, insert query3 failed');
+			$inumcmda=mysqli_insert_id($conn); 		
 
 			$query4 = "INSERT INTO comanda_linia (numero, ref, quantitat, cistella)
 				VALUES ('$inumcmda', '$pref', '1', '0')";
-			mysql_query($query4) or die('Error, insert query4 failed'); 	
+			mysqli_query($conn,$query4) or die('Error, insert query4 failed'); 	
 		}	
 	}	
 
@@ -103,9 +103,9 @@ $user = $_SESSION['user'];
 		////Busquem el numero de comanda////
 		$query= "SELECT c.numero FROM comanda AS c
 		WHERE c.data='$gbd_data' AND c.proces='$gproces' AND c.grup='$ggrup' AND c.usuari='$gfam'";
-		$result=mysql_query($query);
+		$result=mysqli_query($conn,$query);
 		if (!$result) { die("Query to show fields from table failed");}
-		list($pnumcmda)=mysql_fetch_row($result);
+		list($pnumcmda)=mysqli_fetch_row($result);
 	
 		$count=0;
 		for ($i=0; $i<$files; $i++) 
@@ -115,24 +115,24 @@ $user = $_SESSION['user'];
 			
 			///Busquem el nomprod i nomprov de $post_ref///
 			$query0= "SELECT nom, proveidora FROM productes WHERE ref='$post_ref[$i]'";
-			$result0=mysql_query($query0);
+			$result0=mysqli_query($conn,$query0);
 			if (!$result0) { die("Query0 to show fields from table failed");}
-			list($post_prod,$post_prov)=mysql_fetch_row($result0);			
+			list($post_prod,$post_prov)=mysqli_fetch_row($result0);			
 			
 			///Busquem si existeixen quantitats de cistella introduides anteriorment///
 			$select= "SELECT cistella FROM comanda_linia	
 			WHERE numero='$pnumcmda' AND ref='$post_ref[$i]'";
-			$result = mysql_query($select);
-			if (!$result) { die('Invalid query select: ' . mysql_error());}
-			list($c)= mysql_fetch_row($result);
+			$result = mysqli_query($conn,$select);
+			if (!$result) { die('Invalid query select: ' . mysqli_error($conn));}
+			list($c)= mysqli_fetch_row($result);
 			
 			///Busquem si és un producte d'estoc///
 			$select9= "SELECT pr.categoria, cat.estoc
 			FROM productes AS pr, categoria AS cat
 			WHERE pr.categoria=cat.tipus AND pr.ref='$post_ref[$i]'";
-			$result9 = mysql_query($select9);
-			if (!$result9) { die('Invalid query select9: ' . mysql_error());}
-			list($scat,$sestoc)= mysql_fetch_row($result9);
+			$result9 = mysqli_query($conn,$select9);
+			if (!$result9) { die('Invalid query select9: ' . mysqli_error($conn));}
+			list($scat,$sestoc)= mysqli_fetch_row($result9);
 			
 			///Si és d'estoc i te introduida una quantitat a cistella ///
 			/// llavors la recupera del camp estoc de la taula productes ///
@@ -141,15 +141,15 @@ $user = $_SESSION['user'];
 				$query6= "UPDATE productes 
 				SET estoc=estoc+'$c'
 				WHERE ref='$post_ref[$i]'";
-				mysql_query($query6) or die('Error, insert query6 failed');
+				mysqli_query($conn,$query6) or die('Error, insert query6 failed');
 			}
 			
 			
 			/// Calculem el pvp sense iva. Preu*marge ///
 			$select10= "SELECT preusi, iva, marge, descompte FROM productes WHERE ref='$post_ref[$i]'";
-			$result10 = mysql_query($select10);
-			if (!$result10) { die('Invalid query select10: ' . mysql_error());}
-			list($spreusi,$siva,$smarge,$sdescompte)= mysql_fetch_row($result10);
+			$result10 = mysqli_query($conn,$select10);
+			if (!$result10) { die('Invalid query select10: ' . mysqli_error($conn));}
+			list($spreusi,$siva,$smarge,$sdescompte)= mysqli_fetch_row($result10);
 										
 			$pvp=$spreusi*(1+$smarge);
 			$pvp=sprintf("%01.2f", $pvp);	
@@ -160,14 +160,14 @@ $user = $_SESSION['user'];
 			$query= "UPDATE comanda_linia
 			SET cistella='$post_cistella[$i]', preu='$pvp', iva='$siva', descompte='$sdescompte'
 			WHERE numero='$pnumcmda' AND ref='$post_ref[$i]'";
-			mysql_query($query) or die('Error, insert query failed');
+			mysqli_query($conn,$query) or die('Error, insert query failed');
 			
 			if ($sestoc=='si')
 			{
 				$query7= "UPDATE productes 
 				SET estoc=estoc-'$post_cistella[$i]'
 				WHERE ref='$post_ref[$i]'";
-				mysql_query($query7) or die('Error, insert query7 failed');
+				mysqli_query($conn,$query7) or die('Error, insert query7 failed');
 			}	
 		}
 
@@ -241,11 +241,11 @@ $user = $_SESSION['user'];
 	WHERE cl.numero=c.numero AND c.data='$gbd_data'	AND c.proces='$gproces' AND c.grup='$ggrup'
 	GROUP BY c.numero	ORDER BY c.usuari";
 	
-	$result3 = mysql_query($taula3);
-	if (!$result3) {die('Invalid query3: ' . mysql_error());}
+	$result3 = mysqli_query($conn,$taula3);
+	if (!$result3) {die('Invalid query3: ' . mysqli_error($conn));}
 
 	$i=0;
-	while(list($numero,$familia,$demanat,$servit)=mysql_fetch_row($result3))
+	while(list($numero,$familia,$demanat,$servit)=mysqli_fetch_row($result3))
 	{
 		$color="";
 		if ($servit!=0) 

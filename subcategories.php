@@ -47,9 +47,9 @@ Subcategories a <?php echo $gcat; ?>
 	{
 		$select= "SELECT subcategoria FROM subcategoria	
 		WHERE subcategoria='".$psubcat."' AND categoria='".$pcat."' ";
-		$result = mysql_query($select) or die("Query failed. " . mysql_error());
+		$result = mysqli_query($conn,$select) or die("Query failed. " . mysqli_error($conn));
    	
-   	if (mysql_num_rows($result) == 1) 
+   	if (mysqli_num_rows($result) == 1) 
    	{
    		die
    		("<p class='comment'>La subcategoria ".$psubcat." amb la categoria ".$pcat." ja existeix.</p>");
@@ -58,7 +58,7 @@ Subcategories a <?php echo $gcat; ?>
 		{
 			$query2 = "INSERT INTO subcategoria 
 			VALUES ('".$psubcat."', '".$pcat."', 'activada') ";
-			mysql_query($query2) or die("Error, insert query2 failed");
+			mysqli_query($conn,$query2) or die("Error, insert query2 failed");
 		}
 	}
 	 
@@ -67,14 +67,14 @@ Subcategories a <?php echo $gcat; ?>
 			$query3 = "UPDATE subcategoria
 			SET actiu= '".$gactiu."'
 			WHERE subcategoria='".$gsubcat."' AND categoria='".$gcat."' ";
-			mysql_query($query3) or die('Error, insert query3 failed');			
+			mysqli_query($conn,$query3) or die('Error, insert query3 failed');			
 		}
 								
 	if ($elim != "")
 		{
 			$query4 = "DELETE FROM subcategoria
 			WHERE subcategoria='".$gsubcat."' AND categoria='".$gcat."' ";
-			mysql_query($query4) or die('Error, insert query4 failed');
+			mysqli_query($conn,$query4) or die('Error, insert query4 failed');
 			
 			echo "<p class='comment'>La subcategoria ".$gsubcat." s'ha eliminat corectament</p>";			
 		}
@@ -96,11 +96,11 @@ Subcategories a <?php echo $gcat; ?>
 		$taula = "SELECT subcategoria,actiu FROM subcategoria
 		WHERE categoria='".$gcat."' 
 		ORDER BY actiu, subcategoria";
-		$result = mysql_query($taula);
-		if (!$result) {die('Invalid query: ' . mysql_error());}
+		$result = mysqli_query($conn,$taula);
+		if (!$result) {die('Invalid query: ' . mysqli_error($conn));}
 
 		$k=0;
-		while (list($subcat,$actiu)=mysql_fetch_row($result))
+		while (list($subcat,$actiu)=mysqli_fetch_row($result))
 		{
 			$checked1="";
 			$checked2="";

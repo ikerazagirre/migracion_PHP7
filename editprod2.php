@@ -130,9 +130,9 @@ function dropdownlist(listindex)
 <?php
 
 	$query9= "SELECT tipus FROM categoria ORDER BY tipus";
-	$result9=mysql_query($query9);
+	$result9=mysqli_query($conn,$query9);
 	if (!$result9) { die("Query9 to show fields from table categoria failed");}
-	while (list($jtipus)=mysql_fetch_row($result9))
+	while (list($jtipus)=mysqli_fetch_row($result9))
 	{
 ?>
 		case "<?php echo $jtipus; ?>":
@@ -140,10 +140,10 @@ function dropdownlist(listindex)
 <?php
 		$query8= "SELECT subcategoria FROM subcategoria 
 		WHERE categoria='".$jtipus."' ORDER BY subcategoria";
-		$result8=mysql_query($query8);
+		$result8=mysqli_query($conn,$query8);
 		if (!$result8) {die("Query8 to show fields from table subcategoria failed");}
 		$i=1;
-		while (list($jsubcat)=mysql_fetch_row($result8))
+		while (list($jsubcat)=mysqli_fetch_row($result8))
 		{
 ?>		
 		document.nouprod.subtipus.options[<?php echo $i; ?>]=new Option("<?php echo $jsubcat; ?>","<?php echo $jsubcat; ?>");
@@ -207,9 +207,9 @@ if ($que=='create')
 {
 	$select= "SELECT nom,proveidora FROM productes 
 	WHERE nom='".$pnom."' AND proveidora='".$pprov."'";
-	$query=mysql_query($select);
-	if (!$query) {die('Invalid query: ' . mysql_error());}
-	if (mysql_num_rows($query) == 1) 
+	$query=mysqli_query($conn,$select);
+	if (!$query) {die('Invalid query: ' . mysqli_error($conn));}
+	if (mysqli_num_rows($query) == 1) 
    {
    	die
    	("<p class='comment'>El producte ".$pnom." de la proveïdora ".$pprov." ja existeix.</p>");
@@ -218,7 +218,7 @@ if ($que=='create')
  	{
  		$query2= "INSERT INTO productes
  				VALUES ('".$pnom."','".$punitat."','".$pprov."','".$pcat."','".$psubcat."','".$pactiu."','".$ppreu."','0','".$pnotes."')";
-		mysql_query($query2) or die('Error, insert query2 failed');
+		mysqli_query($conn,$query2) or die('Error, insert query2 failed');
 		die ("<p class='comment'>El producte ".$supernom." s'ha introduït correctament a la base de dades:</p>
 			<p class='cos2'>unitat: ".$punitat."</p>
 			<p class='cos2'>proveïdora: ".$pprov."</p>
@@ -235,7 +235,7 @@ if ($que=='edit')
 	$query3= "UPDATE productes SET unitat='".$punitat."',categoria='".$pcat."', 
 	subcategoria='".$psubcat."',actiu='".$pactiu."',preu='".$ppreu."',notes='".$pnotes."'
 	WHERE nom='".$gnom."' AND proveidora='".$gprov."'";
-	mysql_query($query3) or die('Error, insert query3 failed');
+	mysqli_query($conn,$query3) or die('Error, insert query3 failed');
 	die ("<p class='comment'>El producte ".$supernom." ha canviat a les següents dades:</p>
 			<p class='cos2'>unitat: ".$punitat."</p>
 			<p class='cos2'>proveïdora: ".$gprov."</p>
@@ -250,9 +250,9 @@ if ($que=='elim')
 {
 	$query4= "SELECT producte FROM albara_linia
 	WHERE producte='".$gnom."'";
-	$result4 = mysql_query($query4);
-	if (!$result4) {die('Invalid query4: ' . mysql_error());}
-	if (mysql_num_rows($result4) != 0)
+	$result4 = mysqli_query($conn,$query4);
+	if (!$result4) {die('Invalid query4: ' . mysqli_error($conn));}
+	if (mysqli_num_rows($result4) != 0)
 	{
 		die
    	("<p class='comment'>El producte ".$gnom." de la proveïdora ".$gprov." ja ha estat utilitzat.</p>
@@ -260,9 +260,9 @@ if ($que=='elim')
 	}
 	$query5= "SELECT cl.ref, pr.nom FROM comanda_linia AS cl, productes AS pr
 	WHERE cl.ref=pr.ref AND pr.nom='$gnom'";
-	$result5 = mysql_query($query5);
-	if (!$result5) {die('Invalid query5: ' . mysql_error());}
-	if (mysql_num_rows($result5) != 0)
+	$result5 = mysqli_query($conn,$query5);
+	if (!$result5) {die('Invalid query5: ' . mysqli_error($conn));}
+	if (mysqli_num_rows($result5) != 0)
 	{
 		die
    	("<p class='coment'>El producte ".$gnom." de la proveïdora ".$gprov." ja ha estat utilitzat.</p>
@@ -270,7 +270,7 @@ if ($que=='elim')
 	}
 	
 	$query6= "DELETE FROM productes WHERE nom='".$gnom."' AND proveidora='".$gprov."'";
-	mysql_query($query6) or die('Error, insert query6 failed');
+	mysqli_query($conn,$query6) or die('Error, insert query6 failed');
 	die
    	("<p class='comment'>El producte ".$gnom." de la proveïdora ".$gprov." s'ha eliminat de la base de dades.</p>");
 }
@@ -284,10 +284,10 @@ if ($que=='elim')
 	{
 		$select= "SELECT * FROM productes 
 		WHERE nom='".$gnom."' AND proveidora='".$gprov."'";
-		$query=mysql_query($select);
-		if (!$query) {die('Invalid query: ' . mysql_error());}
+		$query=mysqli_query($conn,$select);
+		if (!$query) {die('Invalid query: ' . mysqli_error($conn));}
     
-		list($nom,$unitat,$proveidora,$tipus,$subtipus,$actiu,$preu,$estoc,$notes)=mysql_fetch_row($query);
+		list($nom,$unitat,$proveidora,$tipus,$subtipus,$actiu,$preu,$estoc,$notes)=mysqli_fetch_row($query);
 		$readonly="readonly";
 	}
 
@@ -316,9 +316,9 @@ value="<?php echo $unitat; ?>"></td></tr>
 	{
 	echo '<td><SELECT name="prov" id="prov" size="1" maxlenght="30"><option value="">elegeix proveïdora</option>';
 	$query= "SELECT nom FROM proveidores ORDER BY nom";
-	$result=mysql_query($query);
+	$result=mysqli_query($conn,$query);
 	if (!$result) { die("Query to show fields from table proveidores failed");}
-	while (list($sprov)=mysql_fetch_row($result))
+	while (list($sprov)=mysqli_fetch_row($result))
 	{
 		echo "<option value='".$sprov."'>".$sprov."</option>";
 	}
@@ -335,9 +335,9 @@ onChange="javascript: dropdownlist(this.options[this.selectedIndex].value);">
 <?php
 	
 	$query= "SELECT tipus FROM categoria ORDER BY tipus";
-	$result=mysql_query($query);
+	$result=mysqli_query($conn,$query);
 	if (!$result) { die("Query to show fields from table tipus_prod failed");}
-	while (list($stipus)=mysql_fetch_row($result))
+	while (list($stipus)=mysqli_fetch_row($result))
 	{
 		if ($stipus==$tipus) 
 		{

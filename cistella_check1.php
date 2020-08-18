@@ -29,16 +29,16 @@ function updateCistella($codi, $numero, $numfact){
 	$data2= date("Y-m-d"); 
 	$taula7 = "UPDATE comanda SET report0='".$codi."', check0='1', data2='$data2', check1='1', 
 	check2='1', numfact='".$numfact."' WHERE numero='".$numero."'";
-	$result7 = mysql_query($taula7);
-	if (!$result7) {die('Invalid query7: ' . mysql_error());}
+	$result7 = mysqli_query($conn,$taula7);
+	if (!$result7) {die('Invalid query7: ' . mysqli_error($conn));}
 }
 
 
 function laCuenta($numero){
 	$selectCuenta = "SELECT SUM(cistella*preu*(1+iva)*(1-descompte)) FROM comanda_linia WHERE numero='".$numero."'";
-	$resultCuenta = mysql_query($selectCuenta);
-	if (!$resultCuenta) {die('Invalid query: ' . mysql_error());}
-	$cuenta = mysql_fetch_row($resultCuenta);
+	$resultCuenta = mysqli_query($conn,$selectCuenta);
+	if (!$resultCuenta) {die('Invalid query: ' . mysqli_error($conn));}
+	$cuenta = mysqli_fetch_row($resultCuenta);
 	return $cuenta;
 }
 
@@ -47,10 +47,10 @@ FROM comanda
 WHERE proces='$gproces' AND grup='$ggrup' AND data='$gbd_data'
 ORDER BY numero";
 
-$result = mysql_query($taula);
-if (!$result) {die('Invalid query: ' . mysql_error());}
+$result = mysqli_query($conn,$taula);
+if (!$result) {die('Invalid query: ' . mysqli_error($conn));}
 
-while (list($numero,$familia,$check0)=mysql_fetch_row($result))
+while (list($numero,$familia,$check0)=mysqli_fetch_row($result))
 {
 	//hace la cuenta y la pone en negativo
 	$cuenta = laCuenta($numero);
@@ -72,9 +72,9 @@ while (list($numero,$familia,$check0)=mysql_fetch_row($result))
 	WHERE YEAR(data2)=".$currentyear."
 	ORDER BY numfact DESC 
 	LIMIT 1";
-	$resultnf2 = mysql_query($taulanf2);
-	if (!$resultnf2) {die('Invalid query: ' . mysql_error());}
-	list($lastnumfact)=mysql_fetch_row($resultnf2);
+	$resultnf2 = mysqli_query($conn,$taulanf2);
+	if (!$resultnf2) {die('Invalid query: ' . mysqli_error($conn));}
+	list($lastnumfact)=mysqli_fetch_row($resultnf2);
 	
 	if ($lastnumfact!="")
 	{
@@ -93,9 +93,9 @@ while (list($numero,$familia,$check0)=mysql_fetch_row($result))
 	////////////////////////////////
 	
 	$taula5 = "SELECT email1, email2 FROM usuaris WHERE nom='".$familia."'";
-	$result5 = mysql_query($taula5);
-	if (!$result5) {die('Invalid query5: ' . mysql_error());}
-	list($email1,$email2)=mysql_fetch_row($result5);
+	$result5 = mysqli_query($conn,$taula5);
+	if (!$result5) {die('Invalid query5: ' . mysqli_error($conn));}
+	list($email1,$email2)=mysqli_fetch_row($result5);
 	
 	//A qui va dirigit
 	$to  = $email1.", ".$email2;
@@ -127,8 +127,8 @@ while (list($numero,$familia,$check0)=mysql_fetch_row($result))
 	//está relacionado con los correos
 	$data_c= date("Y-m-d-H-i-s");
 	$taula6 = "INSERT INTO incidencia VALUES('cistellaires', '$familia', '$subject', '$text', '$data_c', '0')";
-	$result6 = mysql_query($taula6);
-	if (!$result6) {die('Invalid query6: ' . mysql_error());}
+	$result6 = mysqli_query($conn,$taula6);
+	if (!$result6) {die('Invalid query6: ' . mysqli_error($conn));}
 	}
 	else
 	{ 
@@ -138,16 +138,16 @@ while (list($numero,$familia,$check0)=mysql_fetch_row($result))
 	//busca el último record cargado al moneder de la familia para esta factura o comanda
 	//busca la fecha más reciente en el moneder
 	$selectCobroReciente = "SELECT max(sessio) as fechaMax FROM moneder WHERE familia='$familia' AND concepte LIKE '%".$numero."'";
-	$resultCobroReciente = mysql_query($selectCobroReciente);
-	if (!$resultCobroReciente) {die('Invalid query: ' . mysql_error());}
-	$TrobaDataCobro = mysql_fetch_row($resultCobroReciente);
+	$resultCobroReciente = mysqli_query($conn,$selectCobroReciente);
+	if (!$resultCobroReciente) {die('Invalid query: ' . mysqli_error($conn));}
+	$TrobaDataCobro = mysqli_fetch_row($resultCobroReciente);
 	$fecha_maxima = $TrobaDataCobro[0];
 		
 	//busca el cobro con la fecha más reciente
 	$selectBuscaCobro = "SELECT valor FROM moneder WHERE familia='$familia' AND concepte LIKE 'Factura num.%".$numero."' AND sessio = '$fecha_maxima'";
-	$resultBuscaCobro = mysql_query($selectBuscaCobro);
-	if (!$resultBuscaCobro) {die('Invalid query: ' . mysql_error());}
-	$TrobaCobro = mysql_fetch_row($resultBuscaCobro);
+	$resultBuscaCobro = mysqli_query($conn,$selectBuscaCobro);
+	if (!$resultBuscaCobro) {die('Invalid query: ' . mysqli_error($conn));}
+	$TrobaCobro = mysqli_fetch_row($resultBuscaCobro);
 	$cobro = $TrobaCobro[0];
 	
 
@@ -161,15 +161,15 @@ while (list($numero,$familia,$check0)=mysql_fetch_row($result))
 		//anula el cobro anterior antes de actualizar el moneder con la cuenta real
 		$session = date ("Y-m-d H:i:s");
 		$selectAnulaCobro = "INSERT INTO moneder(sessio, user, data, familia, concepte, valor) VALUES ('".$session."','".$user."','".date('Y-m-d')."','".$familia."','Anulacio Factura num. ".$numero."','".$cobro."')";
-		$resultAnulaCobro = mysql_query($selectAnulaCobro);
-		if (!$resultAnulaCobro) {die('Invalid query: ' . mysql_error());}
+		$resultAnulaCobro = mysqli_query($conn,$selectAnulaCobro);
+		if (!$resultAnulaCobro) {die('Invalid query: ' . mysqli_error($conn));}
 	}
 	
 	//descuenta el valor de la cestella del moneder de la familia
 	$session4 = date ("Y-m-d H:i:s");
 	$selectMoneder2 = "INSERT INTO moneder(sessio, user, data, familia, concepte, valor) VALUES ('".$session4."','".$user."','".date('Y-m-d')."','".$familia."','Factura num. ".$numero."','".$cuenta."')";
-	$resultMoneder2 = mysql_query($selectMoneder2);
-	if (!$resultMoneder2) {die('Invalid query: ' . mysql_error());}
+	$resultMoneder2 = mysqli_query($conn,$selectMoneder2);
+	if (!$resultMoneder2) {die('Invalid query: ' . mysqli_error($conn));}
 }
 
 //generació codi grup cistelles 
@@ -199,24 +199,24 @@ $codi2 = generaCodiCistella($lenght);
 $select= "SELECT check1,codi 
 	FROM cistella_check 
 	WHERE proces='$gproces' AND grup='$ggrup' AND data='$gbd_data'";
-$result = mysql_query($select);
-if (!$result) {die('Invalid query: ' . mysql_error());}
+$result = mysqli_query($conn,$select);
+if (!$result) {die('Invalid query: ' . mysqli_error($conn));}
 
-if (mysql_num_rows($result) > 0)
+if (mysqli_num_rows($result) > 0)
 {
 	$taula3= "UPDATE cistella_check 
 	SET check1='1', codi='$codi2' 
 	WHERE  proces='$gproces' AND grup='$ggrup' AND data='$gbd_data'";
-	$result3 = mysql_query($taula3);
-	if (!$result3) {die('Invalid query3: ' . mysql_error());}
+	$result3 = mysqli_query($conn,$taula3);
+	if (!$result3) {die('Invalid query3: ' . mysqli_error($conn));}
 }
 
 else
 {
 	$taula2="INSERT INTO cistella_check 
 	VALUES ('$gproces','$ggrup','$gbd_data','1','$codi2')";
-	$result2 = mysql_query($taula2);
-	if (!$result2) {die('Invalid query2: ' . mysql_error());}
+	$result2 = mysqli_query($conn,$taula2);
+	if (!$result2) {die('Invalid query2: ' . mysqli_error($conn));}
 }
 
 ?>

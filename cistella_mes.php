@@ -28,10 +28,10 @@ if ($_SESSION['image_is_logged_in'] == 'true' OR $_SESSION['codi_cistella'] != '
 
 	/// Busquem nomprod i nomprov a partir de gref ////
 	$query0= "SELECT nom, proveidora FROM productes WHERE ref='$gref'";
-	$result0=mysql_query($query0);
+	$result0=mysqli_query($conn,$query0);
 	if (!$result0) { die("Query0 to show fields from table failed");}
 
-	list($gnomprod,$gprov)=mysql_fetch_row($result0);
+	list($gnomprod,$gprov)=mysqli_fetch_row($result0);
 	///////////	
 	
 	$nota="";
@@ -171,10 +171,10 @@ if ($_SESSION['image_is_logged_in'] == 'true' OR $_SESSION['codi_cistella'] != '
 				LEFT JOIN comanda_linia AS cl ON c.numero=cl.numero AND cl.ref='$gref'
 				WHERE u.dia='$ggrup' AND u.tipus2='actiu' 
 				ORDER BY u.nom";
-				$result7 = mysql_query($taula7);
-				if (!$result7) {die('Invalid query7: ' . mysql_error());}
+				$result7 = mysqli_query($conn,$taula7);
+				if (!$result7) {die('Invalid query7: ' . mysqli_error($conn));}
 
-				while(list($sfam,$snum,$sref)=mysql_fetch_row($result7))
+				while(list($sfam,$snum,$sref)=mysqli_fetch_row($result7))
 				{
 					if($sref=="") 
 					{
@@ -218,10 +218,10 @@ if ($_SESSION['image_is_logged_in'] == 'true' OR $_SESSION['codi_cistella'] != '
 					<option value="">--</option>';
 
 				$query= "SELECT nom FROM proveidores ORDER BY nom";
-				$result=mysql_query($query);
+				$result=mysqli_query($conn,$query);
 				if (!$result) {die("Query to show fields from table failed");}
 
-				while (list($sprov)=mysql_fetch_row($result)) 
+				while (list($sprov)=mysqli_fetch_row($result)) 
 				{
 					if ($pprov==$sprov){echo '<option value="'.$sprov.'" selected>'.$sprov.'</option>';}
 					else {echo '<option value="'.$sprov.'">'.$sprov.'</option>';}
@@ -247,19 +247,19 @@ if ($_SESSION['image_is_logged_in'] == 'true' OR $_SESSION['codi_cistella'] != '
 				// Es pot elegir entre tots els productes excepte els que ja hi son ///
 				
 				$query2 = "SELECT pr.ref, pr.nom FROM productes AS pr	WHERE pr.proveidora='$pprov' ORDER BY pr.nom";
-				$result2=mysql_query($query2);
-				if (!$result2) {die("Query2 to show fields from table failed:" . mysql_error());}
+				$result2=mysqli_query($conn,$query2);
+				if (!$result2) {die("Query2 to show fields from table failed:" . mysqli_error($conn));}
 
-				while (list($sref,$sprod)=mysql_fetch_row($result2)) 
+				while (list($sref,$sprod)=mysqli_fetch_row($result2)) 
 				{
 					$query3 = "SELECT cl.ref, pr.nom FROM comanda_linia AS cl, comanda AS c, productes AS pr
 					WHERE c.numero=cl.numero AND cl.ref=pr.ref AND cl.ref='$sref'
 					AND c.data='$gbd_data' AND c.proces='$gproces' AND c.grup='$ggrup' 
 					GROUP BY cl.ref";
-					$result3=mysql_query($query3);
-					if (!$result3) {die("Query3 to show fields from table failed:" . mysql_error());}
+					$result3=mysqli_query($conn,$query3);
+					if (!$result3) {die("Query3 to show fields from table failed:" . mysqli_error($conn));}
 					
-					list($r, $ssprod)=mysql_fetch_row($result3);
+					list($r, $ssprod)=mysqli_fetch_row($result3);
 					if(!$ssprod) 
 					{
 						if ($pprod==$sprod)

@@ -171,8 +171,8 @@ if ($files!="")
 {
 	$query="INSERT INTO albara (proveidora,data,totsi,totiva,tot,notes) 
 	VALUES ('$pprov','$pdataintro','$ptotsi','$ptotiva','$ptot','$notes')";
-	mysql_query($query) or die('Error, la inserció de dades no ha estat possible');
-	$num_alb=mysql_insert_id();
+	mysqli_query($conn,$query) or die('Error, la inserció de dades no ha estat possible');
+	$num_alb=mysqli_insert_id($conn);
 		
 	echo '<table style="padding: 10px;" width="70%" align="center" cellspading="5" cellspacing="5" >
 				<tr>
@@ -190,18 +190,18 @@ if ($files!="")
 		{
 			$query4 = "INSERT INTO albara_linia(numero, producte, quantitat) 
 			VALUES ('$num_alb', '$nomp[$i]', '$num[$i]')";
-			mysql_query($query4) or die('Error, insert4 query failed');
+			mysqli_query($conn,$query4) or die('Error, insert4 query failed');
 
 			$query5= "SELECT pr.nom,pr.categoria,cat.estoc
 			FROM productes AS pr, categoria AS cat 
 			WHERE pr.nom='$nomp[$i]' AND pr.categoria=cat.tipus";
-			$result5=mysql_query($query5);
+			$result5=mysqli_query($conn,$query5);
 			if (!$result5) { die("Query5 to show fields from table failed");}
-			list($v1,$v2,$sestoc)=mysql_fetch_row($result5);
+			list($v1,$v2,$sestoc)=mysqli_fetch_row($result5);
 			if ($sestoc=='si')
 			{
 				$query7 = "UPDATE productes SET estoc=estoc+'$num[$i]' WHERE nom='$nomp[$i]'";
-				mysql_query($query7) or die('Error, update query7 failed');
+				mysqli_query($conn,$query7) or die('Error, update query7 failed');
 			}			
 			print ('<p class="cos" align="left">- '.$num[$i].' '.$unitat[$i].' de '.$nomp[$i].'.</p>');
 		}
@@ -233,10 +233,10 @@ else
 
 <?php
 $query= "SELECT nom FROM proveidores ORDER BY nom";
-$result=mysql_query($query);
+$result=mysqli_query($conn,$query);
 if (!$result) {die("Query to show fields from table failed");}
 
-while (list($sprov)=mysql_fetch_row($result)) 
+while (list($sprov)=mysqli_fetch_row($result)) 
 {
 	if ($pprov==$sprov){echo '<option value="'.$sprov.'" selected>'.$sprov.'</option>';}
 	else {echo '<option value="'.$sprov.'">'.$sprov.'</option>';}
@@ -325,14 +325,14 @@ if ($pprov!="")
 	FROM productes
 	WHERE proveidora='$pprov' $prodact
 	ORDER BY nom";
-	$result3 = mysql_query($sel3);
-	if (!$result3) {die('Invalid query3: ' . mysql_error());}
+	$result3 = mysqli_query($conn,$sel3);
+	if (!$result3) {die('Invalid query3: ' . mysqli_error($conn));}
 
 	print ('<table style="padding: 10px;" width="80%" align="center" cellspading="5" cellspacing="5" >
 	<tr cos="cos_majus"><td width="50%" align="left">Producte</td><td width="25%" align="center">Quantitat</td>
 	<td width="25%" align="center">Unitat</td></tr>');
 	$id=0; $contador=0;
-	while(list($nomprod,$unitat) = mysql_fetch_row($result3))
+	while(list($nomprod,$unitat) = mysqli_fetch_row($result3))
 	{
 		print('<tr class="cos"><td align="left">'.$nomprod.': <input type=hidden name="nomp[]" id="nom'.$id.'" value="'.$nomprod.'"></td>
 		<td align="center"><input name="num[]" id="num'.$id.'" type="TEXT" maxlength="8" size="5"></td> 

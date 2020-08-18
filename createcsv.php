@@ -74,19 +74,19 @@ $pre_arxiu="facturatotal_".$bd_data."_".$grup."_".$proces.".csv";
 include 'config/configuracio.php';
 
 $select3="SELECT nom FROM proveidores";
-$resultat3=mysql_query($select3);
+$resultat3=mysqli_query($conn,$select3);
 if (!$resultat3) {die("Query to show fields from table select3 failed");}
-$numrowsat3=mysql_numrows($resultat3);
-while (list($prove)=mysql_fetch_row($resultat3))
+$numrowsat3=mysqli_numrows($resultat3);
+while (list($prove)=mysqli_fetch_row($resultat3))
 {
 	$select2="SELECT cl.numero, c.data, cl.ref, pr.nom, pr.categoria, cat.estoc
 	FROM comanda_linia AS cl, comanda AS c, productes AS pr, categoria AS cat
 	WHERE c.numero=cl.numero AND cl.ref=pr.ref AND c.proces='$proces' AND pr.categoria=cat.tipus
 	AND c.proces='$proces' AND c.data='$bd_data' AND pr.proveidora='$prove' ".$where."
 	ORDER BY pr.categoria, pr.nom";
-	$resultat2=mysql_query($select2);
+	$resultat2=mysqli_query($conn,$select2);
 	if (!$resultat2) {die("Query to show fields from table select2 failed");}
-	$numrowsat2=mysql_numrows($resultat2);
+	$numrowsat2=mysqli_numrows($resultat2);
 
 	$titol="";
 	$header1="";
@@ -102,15 +102,15 @@ while (list($prove)=mysql_fetch_row($resultat3))
 		$select = "SELECT numero,usuari,data2,numfact FROM comanda 
 		WHERE proces='$proces' AND grup='$grup' AND data='$bd_data' 
 		ORDER BY usuari";
-		$result1=mysql_query($select);
+		$result1=mysqli_query($conn,$select);
 		if (!$result1) {die("Query to show fields from table select failed");}
-		$numrows1=mysql_numrows($result1);
+		$numrows1=mysqli_numrows($result1);
 		
 		/// Capçalera 1 ///
 		$header1=";;;Famí­lies;";
 		$dades="";
 		$i=0;
-		while (list($numero,$familia,$datafact,$numfact)=mysql_fetch_row($result1))
+		while (list($numero,$familia,$datafact,$numfact)=mysqli_fetch_row($result1))
 		{
 			$fila[]=$numero;
 			if($estoc==2)
@@ -151,9 +151,9 @@ while (list($prove)=mysql_fetch_row($resultat3))
 		AND c.grup='$grup' AND c.data='$bd_data' AND pr.proveidora='$prove' 
 		GROUP BY cl.ref
 		ORDER BY pr.nom";
-		$result_taula = mysql_query($taula);
-		if (!$result_taula) {die('Invalid query: ' . mysql_error());}
-		while (list($ref,$nomprod,$uni,$preu,$iva,$desc,$sum,$tservit,$tpreu,$tiva,$ttotal)=mysql_fetch_row($result_taula))
+		$result_taula = mysqli_query($conn,$taula);
+		if (!$result_taula) {die('Invalid query: ' . mysqli_error($conn));}
+		while (list($ref,$nomprod,$uni,$preu,$iva,$desc,$sum,$tservit,$tpreu,$tiva,$ttotal)=mysqli_fetch_row($result_taula))
 		{
 			/// Prevenim problemes en el pas a csv. Treiem apostrof i canviem . per comes en els decimals ///			
 			$line="";
@@ -183,11 +183,11 @@ while (list($prove)=mysql_fetch_row($resultat3))
 			WHERE c.proces='$proces' AND c.grup='$grup' AND c.data='$bd_data' 
 			AND cl.ref='$ref'
 			ORDER BY c.usuari";
-			$result2 = mysql_query($taula2);
-			if (!$result2) {die('Invalid query: ' . mysql_error());}
-			$numrows2=mysql_numrows($result2);
+			$result2 = mysqli_query($conn,$taula2);
+			if (!$result2) {die('Invalid query: ' . mysqli_error($conn));}
+			$numrows2=mysqli_numrows($result2);
 			$j=0; $i=0; $k=0;
-			while(list($numcmda,$familia,$nomprod2,$quant,$cistella)=mysql_fetch_row($result2))
+			while(list($numcmda,$familia,$nomprod2,$quant,$cistella)=mysqli_fetch_row($result2))
 			{
 				
 				/// numrows1 és el nombre de comandes del proces ///
@@ -249,9 +249,9 @@ while (list($prove)=mysql_fetch_row($resultat3))
 			WHERE c.numero=cl.numero AND pr.ref=cl.ref AND pr.proveidora='$prove' 
 			AND c.proces='$proces' AND c.grup='$grup' AND c.data='$bd_data' 
 			GROUP BY pr.proveidora";
-			$result_taula_final = mysql_query($taula_final);		
+			$result_taula_final = mysqli_query($conn,$taula_final);		
 			if (!$result_taula_final) {die(mysqli_errno() . mysqli_error() .'a taula final');}
-			list($nomprov2,$pr2,$gr2,$da2,$tservit2,$tpreu2,$tiva2,$ttotal2)=mysql_fetch_row($result_taula_final);
+			list($nomprov2,$pr2,$gr2,$da2,$tservit2,$tpreu2,$tiva2,$ttotal2)=mysqli_fetch_row($result_taula_final);
 			$tservit2_p=str_replace(".",",",$tservit2);
 			$tpreu2_p=sprintf ("%.2f", $tpreu2);
 			$tiva2_p=sprintf ("%.2f", $tiva2);
@@ -279,9 +279,9 @@ if($estoc==2)
 	FROM comanda AS c, comanda_linia AS cl
 	WHERE c.numero=cl.numero AND c.proces='$proces' AND c.grup='$grup' AND c.data='$bd_data' 
 	GROUP BY c.usuari ORDER BY c.usuari";
-	$result_taula_abaix = mysql_query($taula_abaix);		
+	$result_taula_abaix = mysqli_query($conn,$taula_abaix);		
 	if (!$result_taula_abaix) {die(mysqli_errno() . mysqli_error() .'a taula abaix');}
-	while( list($fam3,$num3,$fact3,$tpreu3,$tiva3,$ttotal3)=mysql_fetch_row($result_taula_abaix) )
+	while( list($fam3,$num3,$fact3,$tpreu3,$tiva3,$ttotal3)=mysqli_fetch_row($result_taula_abaix) )
 	{
 		$yearfact3=	date_parse($bd_data);
 		$yearfact3=$yearfact3["year"];

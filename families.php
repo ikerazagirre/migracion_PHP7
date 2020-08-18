@@ -61,12 +61,12 @@ if ($_SESSION['image_is_logged_in'] == 'true') {
 
                                 <?php
                                 $select3 = "SELECT nom FROM grups ORDER BY nom";
-                                $query3 = mysql_query($select3);
+                                $query3 = mysqli_query($conn,$select3);
                                 if (!$query3) {
-                                    die('Invalid query3: ' . mysql_error());
+                                    die('Invalid query3: ' . mysqli_error($conn)());
                                 }
 
-                                while (list($sgrup) = mysql_fetch_row($query3)) {
+                                while (list($sgrup) = mysqli_fetch_row($query3)) {
                                     if ($pgrup == $sgrup) {
                                         echo '<option value="' . $sgrup . '" selected>' . $sgrup . '</option>';
                                     } else {
@@ -141,12 +141,12 @@ margin-bottom: 20px; padding-bottom: 20px;">
     <td align="center" width="35%">email alt</td> </tr>');
 
                 $taula = "SELECT nom,components,tel1,email1,email2 FROM usuaris " . $where . " ORDER BY nom";
-                $result = mysql_query($taula);
+                $result = mysqli_query($conn,$taula);
                 if (!$result) {
-                    die('Invalid query: ' . mysql_error());
+                    die('Invalid query: ' . mysqli_error($conn)());
                 }
 
-                while (list($nom, $components, $tel1, $email1,$email2) = mysql_fetch_row($result)) {
+                while (list($nom, $components, $tel1, $email1,$email2) = mysqli_fetch_row($result)) {
                     echo "<tr class='cos'>
 		<td align='center'><a href='vis_user.php?id=" . $nom . "'>" . $nom . " </a></td>
 		<td align='center'>" . $components . "</td>

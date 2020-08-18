@@ -54,11 +54,11 @@ if ($_SESSION['image_is_logged_in'] == 'true') {
                                     <option value="">Elige un proveedor</option>
                                     <?php
                                     $select3 = "SELECT nom FROM proveidores ORDER BY nom";
-                                    $query3 = mysql_query($select3);
+                                    $query3 = mysqli_query($conn,$select3);
                                     if (!$query3) {
-                                        die('Invalid query3: ' . mysql_error());
+                                        die('Invalid query3: ' . mysqli_error($conn));
                                     }
-                                    while (list($sfam) = mysql_fetch_row($query3)) {
+                                    while (list($sfam) = mysqli_fetch_row($query3)) {
                                         if ($pfamilia == $sfam) {
                                             echo '<option value="' . $sfam . '" selected>' . $sfam . '</option>';
                                         } else {
@@ -145,14 +145,14 @@ if ($_SESSION['image_is_logged_in'] == 'true') {
             FROM comanda AS c, comanda_linia AS cl, productes as pr
             WHERE c.numero=cl.numero AND cl.ref=pr.ref " . $where . "
             GROUP BY cl.iva";
-            $result = mysql_query($sel);
+            $result = mysqli_query($conn,$sel);
             if (!$result) {
-                die('Invalid query: ' . mysql_error());
+                die('Invalid query: ' . mysqli_error($conn));
             }
 
             $k = 0;
             $total = 0;
-            while (list($iva, $base, $ivatotal, $total, $datamin, $datamax) = mysql_fetch_row($result)) {
+            while (list($iva, $base, $ivatotal, $total, $datamin, $datamax) = mysqli_fetch_row($result)) {
                 $datas3 = explode("-", $datamax);
                 $datai3 = explode("-", $datamin);
                 $datamaxvis = $datas3[2] . "-" . $datas3[1] . "-" . $datas3[0];

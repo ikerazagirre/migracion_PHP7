@@ -93,10 +93,10 @@ if ($pnom !="")
 {
 	include 'config/configuracio.php';
 	$taula= "SELECT nom FROM proveidores WHERE nom='$pnom'";
-	$result=mysql_query($taula);
-	if (!$result) {die('Invalid query taula: ' . mysql_error());}
+	$result=mysqli_query($conn,$taula);
+	if (!$result) {die('Invalid query taula: ' . mysqli_error($con));}
 
-	$check=mysql_numrows($result);
+	$check=mysqli_numrows($result);
 	if ($check != 0) 
 	{
 		echo "<td><p align='center' class='Estilo1'>La proveïdora ".$supernom." no es pot crear de nou perquè ja existeix.</p>";
@@ -105,7 +105,7 @@ if ($pnom !="")
 	{
 		$query = "INSERT INTO proveidores (nom, actiu, nomcomplert, contacte, adress, telf1, telf2, fax, web, email1, email2, notes)
 			VALUES ('$pnom', '$pactiu', '$pnomcomplert', '$pcontacte', '$padress', '$ptelf1', '$ptelf2', '$pfax', '$pweb', '$pemail1', '$pemail2', '$pnotes')";
-		mysql_query($query) or die('Error, la inserció de dades a query no ha estat possible');
+		mysqli_query($conn,$query) or die('Error, la inserció de dades a query no ha estat possible');
 		
 		
 		echo "<p class='comment'>Les dades de l'empresa o persona proveïdora ".$supernom." 

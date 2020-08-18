@@ -41,13 +41,13 @@ padding: 2px 50px 2px 0px;">
 
                         $taula = "SELECT nom FROM proveidores ORDER BY nom";
 
-                        $result = mysql_query($taula);
+                        $result = mysqli_query($conn,$taula);
                         if (!$result) {
-                            die('Invalid query: ' . mysql_error());
+                            die('Invalid query: ' . mysqli_error($conn));
                         }
 
                         $i = 0;
-                        while (list($nomprov) = mysql_fetch_row($result)) {
+                        while (list($nomprov) = mysqli_fetch_row($result)) {
 
                             echo "<td width='33%' align='center'><a href='editprov.php?id=" . $nomprov . "'>" . $nomprov . " </a></td>";
                             $i++;

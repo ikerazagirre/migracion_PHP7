@@ -46,12 +46,12 @@ padding: 2px 50px 2px 0px;">
                     $taula = "SELECT nom, grup FROM processos
 		GROUP BY nom, grup";
 
-                    $result = mysql_query($taula);
+                    $result = mysqli_query($conn,$taula);
                     if (!$result) {
-                        die('Invalid query: ' . mysql_error());
+                        die('Invalid query: ' . mysqli_error($conn));
                     }
 
-                    while (list($proc, $grup) = mysql_fetch_row($result)) {
+                    while (list($proc, $grup) = mysqli_fetch_row($result)) {
 
                         echo "<tr class='cos'><td align='center'>" . $proc . " </td>
 <td align='center'>" . $grup . "</td>

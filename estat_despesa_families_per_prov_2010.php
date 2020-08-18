@@ -31,19 +31,19 @@ include 'config/configuracio.php';
 $color=array("#F0C900","#00b2ff","orange","#b20000","#14e500","red","#8524ba");
 $cc=0;
 $select3="SELECT nom FROM proveidores";
-$resultat3=mysql_query($select3);
+$resultat3=mysqli_query($conn,$select3);
 if (!$resultat3) {die("Query to show fields from table select3 failed");}
-$numrowsat3=mysql_numrows($resultat3);
-while (list($prove)=mysql_fetch_row($resultat3))
+$numrowsat3=mysqli_numrows($resultat3);
+while (list($prove)=mysqli_fetch_row($resultat3))
 {
 	$select2="SELECT cl.numero, c.data, cl.ref, pr.nom, pr.proveidora
 	FROM comanda_linia AS cl, comanda AS c, productes AS pr
 	WHERE c.numero=cl.numero AND pr.ref=cl.ref
 	AND c.data>='2010-01-01' AND c.data<'2011-01-01' AND pr.proveidora='$prove'
 	ORDER BY pr.proveidora, pr.nom";
-	$resultat2=mysql_query($select2);
+	$resultat2=mysqli_query($conn,$select2);
 	if (!$resultat2) {die("Query to show fields from table select2 failed");}
-	$numrowsat2=mysql_numrows($resultat2);
+	$numrowsat2=mysqli_numrows($resultat2);
 	
 	if ($numrowsat2!=0)
 	{
@@ -53,7 +53,7 @@ while (list($prove)=mysql_fetch_row($resultat3))
 				$cc++;
 				if ($cc==7){$cc=0;}
 	}
-	mysql_free_result($resultat2);
+	mysqli_free_result($resultat2);
 }
 
 
@@ -63,19 +63,19 @@ overflow-x: hidden;">';
 
 $cc=0;
 $select3="SELECT nom FROM proveidores";
-$resultat3=mysql_query($select3);
+$resultat3=mysqli_query($conn,$select3);
 if (!$resultat3) {die("Query to show fields from table select3 failed");}
-$numrowsat3=mysql_numrows($resultat3);
-while (list($prove)=mysql_fetch_row($resultat3))
+$numrowsat3=mysqli_numrows($resultat3);
+while (list($prove)=mysqli_fetch_row($resultat3))
 {
 	$select2="SELECT cl.numero, c.data, cl.ref, pr.nom, pr.proveidora
 	FROM comanda_linia AS cl, comanda AS c, productes AS pr
 	WHERE c.numero=cl.numero AND pr.ref=cl.ref
 	AND c.data>='2010-01-01' AND c.data<'2011-01-01' AND pr.proveidora='$prove'
 	ORDER BY pr.proveidora, pr.nom";
-	$resultat2=mysql_query($select2);
+	$resultat2=mysqli_query($conn,$select2);
 	if (!$resultat2) {die("Query to show fields from table select2 failed");}
-	$numrowsat2=mysql_numrows($resultat2);
+	$numrowsat2=mysqli_numrows($resultat2);
 	
 	if ($numrowsat2!=0)
 	{
@@ -92,9 +92,9 @@ while (list($prove)=mysql_fetch_row($resultat3))
 		$query= "SELECT numero,usuari FROM comanda 
 		WHERE data>='2010-01-01' AND data<'2011-01-01'
 		ORDER BY usuari";
-		$result=mysql_query($query);
+		$result=mysqli_query($conn,$query);
 		if (!$result) { die("Query to show fields from table failed");}
-		$numrows1=mysql_numrows($result);
+		$numrows1=mysqli_numrows($result);
 		
 		// printing table headers
 		echo "<tr class='cos_majus'><td>Producte</td>";
@@ -112,9 +112,9 @@ while (list($prove)=mysql_fetch_row($resultat3))
 		GROUP BY cl.producte
 		ORDER BY cl.proveidora, cl.producte";
 
-		$result = mysql_query($taula);
-		if (!$result) {die('Invalid query: ' . mysql_error());}
-		while (list($ref,$nomprod,$sum,$sumc,$preu,$tpag)=mysql_fetch_row($result))
+		$result = mysqli_query($conn,$taula);
+		if (!$result) {die('Invalid query: ' . mysqli_error($conn));}
+		while (list($ref,$nomprod,$sum,$sumc,$preu,$tpag)=mysqli_fetch_row($result))
 		{
 		$ttpag=$ttpag+$tpag;
 		$tpag=sprintf("%01.2f", $tpag);

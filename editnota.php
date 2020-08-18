@@ -124,10 +124,10 @@ if ($nom!="")
 	if (!$num)
 	{
 		$taula= "SELECT nom FROM notescrip WHERE nom='$nom'";
-		$result=mysql_query($taula);
-		if (!$result) { die('Invalid query taula: ' . mysql_error());}
+		$result=mysqli_query($conn,$taula);
+		if (!$result) { die('Invalid query taula: ' . mysqli_error($conn));}
 
-		$check=mysql_numrows($result);
+		$check=mysqli_numrows($result);
 		if ($check != 0) 
 		{
 		echo "<p class='error' style='font-size: 14px;'>El NOM ".$supernom." ja existeix.</p>
@@ -138,7 +138,7 @@ if ($nom!="")
 		{
 		$query3="INSERT INTO notescrip (nom,text,tipus,caducitat)
 		VALUES ('$nom', '$text', '$tipus', '$data')";
-		mysql_query($query3) or die('Error, la inserció de dades query3 no ha estat possible');
+		mysqli_query($conn,$query3) or die('Error, la inserció de dades query3 no ha estat possible');
 
 		echo "<p class='error' style='font-size: 14px;'>La nota anomenada ".$supernom." 
 		s'ha guardat satisfactòriament</p>";
@@ -149,7 +149,7 @@ if ($nom!="")
 		$query2="UPDATE notescrip
 		SET nom='$nom', text='$text', tipus='$tipus', caducitat='$data'
 		WHERE numero='$num'";
-		mysql_query($query2) or die("Error, no s'han pogut modificar les dades");
+		mysqli_query($conn,$query2) or die("Error, no s'han pogut modificar les dades");
 
 		echo "<p class='error' style='font-size: 14px;'>Les dades de la nota ".$num." - ".$nom." 
 		s'han guardat satisfactòriament</p>";
@@ -170,7 +170,7 @@ else
 		if ($del!="")
 		{
 			$query2="DELETE FROM notescrip WHERE numero='$numnota'";
-			mysql_query($query2) or die("Error, no s'han pogut borrar les dades");
+			mysqli_query($conn,$query2) or die("Error, no s'han pogut borrar les dades");
 			die ("<p class='error' style='font-size: 14px;'>
 			La nota numero ".$numnota." s'ha eliminat satisfactòriament
 			</p>");
@@ -178,10 +178,10 @@ else
 		else
 		{
 		$select= "SELECT * FROM notescrip WHERE numero='$numnota'";
-		$query=mysql_query($select);
-		if (!$query) {die('Invalid query: ' . mysql_error());}
+		$query=mysqli_query($conn,$select);
+		if (!$query) {die('Invalid query: ' . mysqli_error($conn));}
     
-		list($num,$nom,$text,$tipus,$caduc)=mysql_fetch_row($query);
+		list($num,$nom,$text,$tipus,$caduc)=mysqli_fetch_row($query);
 		list($any, $mes, $dia) = explode("-", $caduc);
 		$caduc2=$dia."-".$mes.'-'.$any;
 		}

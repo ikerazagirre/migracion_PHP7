@@ -55,9 +55,9 @@ $user = $_SESSION['user'];
 	////Busquem el numero de comanda////
 	$query= "SELECT c.numero FROM comanda AS c
 	WHERE c.data='$gbd_data' AND c.proces='$gproces' AND c.grup='$ggrup' AND c.usuari='$gfam'";
-	$result=mysql_query($query);
+	$result=mysqli_query($conn,$query);
 	if (!$result) { die("Query to show fields from table failed");}
-	list($numcmda)=mysql_fetch_row($result);
+	list($numcmda)=mysqli_fetch_row($result);
 
 	
 	//////////////////////////////////////////////////
@@ -70,7 +70,7 @@ $user = $_SESSION['user'];
 		echo "numcmda:".$numcmda;
 		$query2 = "INSERT INTO comanda_linia (numero, ref, quantitat, cistella)
 			VALUES ('$numcmda', '$pref', '1', '0')";
-			mysql_query($query2) or die('Error, insert query2 failed');
+			mysqli_query($cann,$query2) or die('Error, insert query2 failed');
 	}	
 	
 ///Inici html///
@@ -183,11 +183,11 @@ Comanda numero: <?php echo $numcmda; ?>
 	AND c.grup='$ggrup'
 	ORDER BY pr.categoria, pr.nom";
 	
-	$result3 = mysql_query($taula3);
-	if (!$result3) {die('Invalid query3: ' . mysql_error());}
+	$result3 = mysqli_query($conn,$taula3);
+	if (!$result3) {die('Invalid query3: ' . mysqli_error($conn));}
 
 	$i=0;
-	while(list($ref,$nomprod,$nomprov,$cat,$preu,$marge,$iva,$desc,$quantitat,$cistella)=mysql_fetch_row($result3))
+	while(list($ref,$nomprod,$nomprov,$cat,$preu,$marge,$iva,$desc,$quantitat,$cistella)=mysqli_fetch_row($result3))
 	{
 		$v_marge=$marge*100;
 		$v_marge=$v_marge."%";		

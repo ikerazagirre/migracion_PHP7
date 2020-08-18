@@ -39,29 +39,29 @@ if ($_SESSION['image_is_logged_in'] == 'true') {
                 $query4 = "UPDATE categoria
 				SET estoc='" . $gestoc . "'
 				WHERE tipus='" . $gtipus . "' ";
-                mysql_query($query4) or die('Error, insert query4 failed');
+                mysqli_query($conn,$query4) or die('Error, insert query4 failed');
             }
 
             if ($gactiu != "") {
                 $query3 = "UPDATE categoria
 				SET actiu='" . $gactiu . "'
 				WHERE tipus='" . $gtipus . "' ";
-                mysql_query($query3) or die('Error, insert query3 failed');
+                mysqli_query($conn,$query3) or die('Error, insert query3 failed');
             }
 
             if ($elim != "") {
                 $select = "SELECT subcategoria FROM subcategoria
 				WHERE categoria='" . $gtipus . "' ";
-                $result = mysql_query($select) or die("Query failed. " . mysql_error());
+                $result = mysqli_query($conn,$select) or die("Query failed. " . mysqli_error($conn));
 
-                if (mysql_num_rows($result) >= 1) {
+                if (mysqli_num_rows($result) >= 1) {
                     die
                     ("<p class='comment'>La categoria " . $gtipus . " posseeix subcategories.</p>
    				<p class='comment'>Hauries de borrar-les en primer terme.</p>");
                 } else {
                     $query4 = "DELETE FROM categoria
 				WHERE tipus='" . $gtipus . "' ";
-                    mysql_query($query4) or die('Error, insert query4 failed');
+                    mysqli_query($query4) or die('Error, insert query4 failed');
 
                     echo "<p class='comment'>La categoria " . $gtipus . " s'ha eliminat correctament</p>";
                 }
@@ -83,13 +83,13 @@ if ($_SESSION['image_is_logged_in'] == 'true') {
 
                     $taula = "SELECT tipus, actiu, estoc FROM categoria
 		ORDER BY actiu, tipus";
-                    $result = mysql_query($taula);
+                    $result = mysqli_query($conn,$taula);
                     if (!$result) {
-                        die('Invalid query: ' . mysql_error());
+                        die('Invalid query: ' . mysqli_error($conn));
                     }
 
                     $k = 0;
-                    while (list($tipus, $actiu, $estoc) = mysql_fetch_row($result))
+                    while (list($tipus, $actiu, $estoc) = mysqli_fetch_row($result))
                     {
                     ?>
                     <tr class="cos">

@@ -166,29 +166,29 @@ onClick="var answer = confirm ('Estas segur de borrar aquest albarà <?php echo 
 if ($elim!="")
 {
 	$delete= "DELETE FROM albara WHERE numero='$num_alb'";
-	mysql_query($delete) or die('Invalid query deleting table1: ' . mysql_error());
+	mysqli_query($conn,$delete) or die('Invalid query deleting table1: ' . mysqli_error($conn));
 	
 	$select="SELECT producte, quantitat FROM albara_linia WHERE numero='$num_alb'";
-	$result = mysql_query($select);
-	if (!$result) {die("Ha fallat result:" .mysql_error());} 
+	$result = mysqli_query($conn,$select);
+	if (!$result) {die("Ha fallat result:" .mysqli_error($conn));} 
 
-	while (list($snomprod,$squant)=mysql_fetch_row($result))
+	while (list($snomprod,$squant)=mysqli_fetch_row($result))
 	{	
 		$query5= "SELECT pr.nom,pr.categoria,cat.estoc
 			FROM productes AS pr, categoria AS cat 
 			WHERE pr.nom='$snomprod' AND pr.categoria=cat.tipus";
-		$result5=mysql_query($query5);
+		$result5=mysqli_query($conn,$query5);
 		if (!$result5) { die("Query5 to show fields from table failed");}
-		list($v1,$v2,$sestoc)=mysql_fetch_row($result5);
+		list($v1,$v2,$sestoc)=mysqli_fetch_row($result5);
 		if ($sestoc=='si')
 		{
 			$query8 = "UPDATE productes SET estoc=estoc-'$squant' WHERE nom='$snomprod'";
-			mysql_query($query8) or die('Error, update query8 failed');
+			mysqli_query($conn,$query8) or die('Error, update query8 failed');
 		}
 	}
 
 	$delete2= "DELETE FROM albara_linia WHERE numero='$num_alb'";
-	mysql_query($delete2) or die('Invalid query deleting table2: ' . mysql_error());
+	mysqli_query($conn,$delete2) or die('Invalid query deleting table2: ' . mysqli_error($conn));
 
 	die ('<p class="comment">
 			L\'albarà '.$num_alb.' ha estat eliminat</p>');
@@ -200,7 +200,7 @@ if ($files!="")
 {
 	$query="UPDATE albara SET data='$pdataintro',totsi='$ptotsi',totiva='$ptotiva',tot='$ptot',notes='$pnotes'
 	WHERE numero='$num_alb'";
-	mysql_query($query) or die('Error, la inserció de dades no ha estat possible');
+	mysqli_query($conn,$query) or die('Error, la inserció de dades no ha estat possible');
 		
 	echo '<table style="padding: 10px;" width="70%" align="center" cellspading="5" cellspacing="5" >
 				<tr>
@@ -212,44 +212,44 @@ if ($files!="")
 	echo '<table style="padding: 10px;" width="70%" align="center" cellspading="5" cellspacing="5" >
 				<tr><td align="left" class="cos">';
 	$query6= "SELECT nom	FROM productes WHERE proveidora='$pprov'";
-	$result6=mysql_query($query6);
+	$result6=mysqli_query($conn,$query6);
 	if (!$result6) { die("Query6 to show fields from table failed");}	
-	$contador=mysql_num_rows($result6);
+	$contador=mysqli_num_rows($result6);
 				
 	for ($i=0; $i<$contador; $i++) 
 	{	
 		if ($numprevi[$i]!="")
 		   {
 				$delete2= "DELETE FROM albara_linia WHERE numero='$num_alb' AND producte='$nomp[$i]'";
-				mysql_query($delete2) or die('Invalid query deleting table2: ' . mysql_error());		   	
+				mysqli_query($conn,$delete2) or die('Invalid query deleting table2: ' . mysqli_error($conn));		   	
 		   	$query5= "SELECT pr.nom,pr.categoria,cat.estoc
 				FROM productes AS pr, categoria AS cat 
 				WHERE pr.nom='$nomp[$i]' AND pr.categoria=cat.tipus";
-				$result5=mysql_query($query5);
+				$result5=mysqli_query($conn,$query5);
 				if (!$result5) { die("Query5 to show fields from table failed");}
-				list($v1,$v2,$sestoc)=mysql_fetch_row($result5);
+				list($v1,$v2,$sestoc)=mysqli_fetch_row($result5);
 				if ($sestoc=='si')
 				{
 		  		 	$query6 = "UPDATE productes SET estoc=estoc-'$numprevi[$i]' WHERE nom='$nomp[$i]'";
-					mysql_query($query6) or die('Error, update query6 failed');
+					mysqli_query($conn,$query6) or die('Error, update query6 failed');
 				}
 		   }				
 		if ($num[$i] != "") 
 		{
 			$query4 = "INSERT INTO albara_linia(numero, producte, quantitat) 
 			VALUES ('$num_alb', '$nomp[$i]', '$num[$i]')";
-			mysql_query($query4) or die('Error, insert4 query failed');
+			mysqli_query($conn,$query4) or die('Error, insert4 query failed');
 			
 			$query5= "SELECT pr.nom,pr.categoria,cat.estoc
 				FROM productes AS pr, categoria AS cat 
 				WHERE pr.nom='$nomp[$i]' AND pr.categoria=cat.tipus";
-			$result5=mysql_query($query5);
+			$result5=mysqli_query($conn,$query5);
 			if (!$result5) { die("Query5 to show fields from table failed");}
-			list($v1,$v2,$sestoc)=mysql_fetch_row($result5);
+			list($v1,$v2,$sestoc)=mysqli_fetch_row($result5);
 			if ($sestoc=='si')
 				{
 					$query7 = "UPDATE productes SET estoc=estoc+'$num[$i]' WHERE nom='$nomp[$i]'";
-					mysql_query($query7) or die('Error, update query7 failed');
+					mysqli_query($conn,$query7) or die('Error, update query7 failed');
 				}
 							
 			print ('<p align="left">- '.$num[$i].' '.$unitat[$i].' de '.$nomp[$i].'.</p>');
@@ -280,9 +280,9 @@ else
 
 	$sel2 = "SELECT proveidora,data,totsi,totiva,tot,notes 
 	FROM albara WHERE numero='$num_alb'";
-	$result2 = mysql_query($sel2);
-	if (!$result2) {die('Invalid query2: ' . mysql_error());} 
-	list($snomprov,$sdataintro,$stotsi,$stotiva,$stot,$snotes) = mysql_fetch_row($result2);
+	$result2 = mysqli_query($conn,$sel2);
+	if (!$result2) {die('Invalid query2: ' . mysqli_error($conn));} 
+	list($snomprov,$sdataintro,$stotsi,$stotiva,$stot,$snotes) = mysqli_fetch_row($result2);
 	$sdata2 = explode ("-",$sdataintro);
 	$sdata = $sdata2[2].'/'.$sdata2[1].'/'.$sdata2[0];
 
@@ -332,20 +332,20 @@ else
 	FROM productes
 	WHERE proveidora='$snomprov'
 	ORDER BY nom";
-	$result3 = mysql_query($sel3);
-	if (!$result3) {die('Invalid query3: ' . mysql_error());}
+	$result3 = mysqli_query($conn,$sel3);
+	if (!$result3) {die('Invalid query3: ' . mysqli_error($conn));}
 
 	print ('<tr class="cos_majus"><td width="40%" align="left">Producte</td><td width="20%" align="center">Quantitat</td>
 	<td width="20%" align="left">Unitat</td></tr>');
 	$id=0; $contador=0;
-	while(list($ssnomprod,$ssunitat) = mysql_fetch_row($result3))
+	while(list($ssnomprod,$ssunitat) = mysqli_fetch_row($result3))
 	{
 		$sel4 = "SELECT quantitat   
 		FROM albara_linia
 		WHERE producte='$ssnomprod' AND numero='$num_alb'";
-		$result4 = mysql_query($sel4);
-		if (!$result4) {die('Invalid query4: ' . mysql_error());}
-		list($quant)=mysql_fetch_row($result4);
+		$result4 = mysqli_query($conn,$sel4);
+		if (!$result4) {die('Invalid query4: ' . mysqli_error($conn));}
+		list($quant)=mysqli_fetch_row($result4);
 		$qdec="";
 		if ($quant!="")
 		{

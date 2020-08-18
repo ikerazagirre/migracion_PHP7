@@ -82,12 +82,12 @@ padding: 2px 50px 2px 0px;">
                                 <option value="">elegeix una proveïdora</option>
                                 <?php
                                 $select3 = "SELECT nom FROM proveidores ORDER BY nom";
-                                $query3 = mysql_query($select3);
+                                $query3 = mysqli_query($conn,$select3);
                                 if (!$query3) {
-                                    die('Invalid query3: ' . mysql_error());
+                                    die('Invalid query3: ' . mysqli_error($conn));
                                 }
 
-                                while (list($sprov) = mysql_fetch_row($query3)) {
+                                while (list($sprov) = mysqli_fetch_row($query3)) {
                                     if ($pprov == $sprov) {
                                         echo '<option value="' . $sprov . '" selected>' . $sprov . '</option>';
                                     } else {
@@ -175,11 +175,11 @@ padding: 2px 50px 2px 0px;">
                 print('<table width="100%" align="center" cellspading="5" cellspacing="5">');
 
                 $sel = "SELECT numero FROM albara " . $where;
-                $result = mysql_query($sel);
+                $result = mysqli_query($conn,$sel);
                 if (!$result) {
-                    die('Invalid quer2: ' . mysql_error());
+                    die('Invalid quer2: ' . mysqli_error($conn));
                 }
-                $rnum = mysql_num_rows($result);
+                $rnum = mysqli_num_rows($result);
 
                 if (!$gcont) {
                     $cont = 20;
@@ -189,14 +189,14 @@ padding: 2px 50px 2px 0px;">
 
                 $sel2 = "SELECT numero,proveidora,data FROM albara " . $where . "
 	ORDER BY numero DESC LIMIT " . $cont;
-                $result2 = mysql_query($sel2);
+                $result2 = mysqli_query($conn,$sel2);
                 if (!$result2) {
-                    die('Invalid query2: ' . mysql_error());
+                    die('Invalid query2: ' . mysqli_error($conn));
                 }
 
                 $i = 0;
                 $k = 0;
-                while (list($numero, $nomprov, $data) = mysql_fetch_row($result2)) {
+                while (list($numero, $nomprov, $data) = mysqli_fetch_row($result2)) {
                     $data2 = explode("-", $data);
                     $datavis = $data2[2] . '/' . $data2[1] . '/' . $data2[0];
                     if ($i == 0) {

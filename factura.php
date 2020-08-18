@@ -37,8 +37,8 @@ if ($_SESSION['image_is_logged_in'] == 'true' OR ($_GET['id'] != "" AND strlen($
 		$sel2="SELECT numero, report0
 		FROM comanda
 		WHERE numero='$numcmda' AND report0='$codi'";
-		$query2=mysql_query($sel2) or die('query2:'.mysql_error());
-		if (mysql_num_rows($query2)!=1) 
+		$query2=mysqli_query($conn,$sel2) or die('query2:'.mysqli_error($conn));
+		if (mysqli_num_rows($query2)!=1) 
 		{
 			die ('<p class="error" style="font-size: 14px;">
 			Entra a l\'aplicatiu per veure la factura '.$numcmda.' o valida-la des del correu 
@@ -49,11 +49,11 @@ if ($_SESSION['image_is_logged_in'] == 'true' OR ($_GET['id'] != "" AND strlen($
 	if ($val=='1')
 	{
 		$sel3="UPDATE comanda SET check1='1' WHERE numero='$numcmda'";
-		$query3=mysql_query($sel3) or die('query3:'.mysql_error());
+		$query3=mysqli_query($conn,$sel3) or die('query3:'.mysqli_error($conn));
 		
 		$sel2a="SELECT numfact, data2 FROM comanda WHERE numero='$numcmda'";
-		$query2a=mysql_query($sel2a) or die('query2a:'.mysql_error());
-		list($numfact2, $data2)=mysql_fetch_row($sel2a);
+		$query2a=mysqli_query($conn,$sel2a) or die('query2a:'.mysqli_error($conn));
+		list($numfact2, $data2)=mysqli_fetch_row($sel2a);
 		
 		$yearfact=strtotime($data2);
 		$yearfact=date('Y',$yearfact);
@@ -68,9 +68,9 @@ if ($_SESSION['image_is_logged_in'] == 'true' OR ($_GET['id'] != "" AND strlen($
 		$sel="SELECT c.usuari, u.nomf, u.adressf, u.niff, c.proces, c.data, c.check0, c.report0, c.data2, c.check1, c.numfact, c.notes
 		FROM comanda AS c, usuaris AS u
 		WHERE c.numero='$numcmda' AND c.usuari=u.nom";
-		$query=mysql_query($sel) or die('query:'.mysql_error());
+		$query=mysqli_query($conn,$sel) or die('query:'.mysqli_error($conn));
 		list($familia, $nomf, $adressf, $niff, $proces, $bd_data, $check0, $acatreport0, 
-		$bd_data2, $check1, $numfact, $notes) = mysql_fetch_row($query);
+		$bd_data2, $check1, $numfact, $notes) = mysqli_fetch_row($query);
 		
 		/// creem numero de factura
 		$factyear=strtotime($bd_data2);
@@ -144,11 +144,11 @@ if ($_SESSION['image_is_logged_in'] == 'true' OR ($_GET['id'] != "" AND strlen($
 		FROM comanda_linia AS cl, productes AS prod
 		WHERE cl.numero='$numcmda' AND cl.ref=prod.ref 
 		ORDER BY prod.categoria, prod.proveidora, prod.nom";
-		$result5=mysql_query($sel5) or die(mysql_error());
+		$result5=mysqli_query($conn,$sel5) or die(mysqli_error($conn));
 
 		$total=0; $total_import_brut=0; $totaliva=0;
 		while (list ($ref, $nomprod, $nomprod2, $unitat, $cistella, $preu, $descompte, $iva)= 
-		mysql_fetch_row($result5)) 
+		mysqli_fetch_row($result5)) 
 		{
 			/// agafem la primera lletra de la unitat ///
 			$unitat1=substr($unitat,0,1);
@@ -192,14 +192,14 @@ if ($_SESSION['image_is_logged_in'] == 'true' OR ($_GET['id'] != "" AND strlen($
 		if ($val=='2')
 		{
 			$sel3="UPDATE comanda SET check2='1' WHERE numero='$numcmda'";
-			$query3=mysql_query($sel3) or die('query3: '.mysql_error());
+			$query3=mysqli_query($conn,$sel3) or die('query3: '.mysqli_error($conn));
 			
 			$sel4="INSERT INTO moneder VALUES ('".$session."','".$user."','".date('Y-m-d')."',
 			'".$familia."','Factura num. ".$numcmda."','-".$total."','')";
-			$query4=mysql_query($sel4) or die('query4: '.mysql_error());
+			$query4=mysqli_query($conn,$sel4) or die('query4: '.mysqli_error($conn));
 			
 			$sel5="UPDATE usuaris SET moneder=moneder-".$total." WHERE nom='".$familia."'";
-			$query5=mysql_query($sel5) or die('query5: '.mysql_error());
+			$query5=mysqli_query($conn,$sel5) or die('query5: '.mysqli_error($conn));
 			
 		}
 ?></tbody>

@@ -67,10 +67,10 @@ if ($pactiu=='baixa') {$checked2='selected';$checked1="";}
 
 <?php
 $select3= "SELECT nom FROM grups ORDER BY nom";
-$query3=mysql_query($select3);
-if (!$query3) {die('Invalid query3: ' . mysql_error());}
+$query3=mysqli_query($conn,$select3);
+if (!$query3) {die('Invalid query3: ' . mysqli_error($conn));}
 
-while (list($sgrup)=mysql_fetch_row($query3)) 
+while (list($sgrup)=mysqli_fetch_row($query3)) 
 {
 	if ($pgrup==$sgrup){echo '<option value="'.$sgrup.'" selected>'.$sgrup.'</option>';}
 	else {echo '<option value="'.$sgrup.'">'.$sgrup.'</option>';}
@@ -135,10 +135,10 @@ margin-bottom: 20px; padding-bottom: 20px;">
 	WHERE moneder.familia=usuaris.nom ".$where."
 	GROUP BY moneder.familia 
 	ORDER BY total ASC";
-	$result = mysql_query($taula);
-	if (!$result) {die('Invalid query: ' . mysql_error());}
+	$result = mysqli_query($conn,$taula);
+	if (!$result) {die('Invalid query: ' . mysqli_error($conn));}
 
-	while (list($nom,$components,$mone)=mysql_fetch_row($result))
+	while (list($nom,$components,$mone)=mysqli_fetch_row($result))
 	{
 		echo "<tr class='cos'>
 		<td align='center'><a href='comptes.php?id4=".$nom."'>".$nom."</a></td>
